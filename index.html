@@ -17,6 +17,7 @@
 
         * {
             box-sizing: border-box;
+            user-select: none; /* Evita selección de texto molesta en tablets */
         }
 
         body {
@@ -37,33 +38,34 @@
         .card {
             background: white;
             width: 100vw;
-            height: 100vh;
+            height: 100vw;
+            max-height: 100vh;
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
             border-top: 8px solid var(--color-azul);
             border-bottom: 8px solid var(--color-rojo);
-            padding: 30px 50px;
+            padding: 20px 40px;
             box-shadow: none;
             border-radius: 0;
             transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
         .columna-izquierda {
-            width: 50%;
+            width: 45%;
             height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             border-right: 3px solid #eee;
-            padding-right: 30px;
+            padding-right: 20px;
         }
 
         #videoCamara {
-            width: 320px;
-            height: 320px;
+            width: 280px;
+            height: 280px;
             border-radius: 50%;
             object-fit: cover;
             border: 8px solid var(--color-azul);
@@ -72,8 +74,8 @@
         }
 
         .foto-capturada {
-            width: 320px;
-            height: 320px;
+            width: 280px;
+            height: 280px;
             border-radius: 50%;
             object-fit: cover;
             border: 8px solid #fff;
@@ -81,87 +83,125 @@
         }
 
         .columna-derecha {
-            width: 48%;
+            width: 52%;
             height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-around;
-            padding-left: 20px;
+            padding-left: 10px;
         }
 
         #reloj-container {
             width: 100%;
         }
         #horaActual {
-            font-size: clamp(32px, 5vw, 48px);
+            font-size: clamp(28px, 4vw, 42px);
             font-weight: 800;
             color: var(--color-negro);
             margin: 0;
         }
         #fechaActual {
-            font-size: clamp(12px, 2vw, 15px);
+            font-size: clamp(11px, 1.5vw, 14px);
             color: #666;
-            margin-top: 4px;
+            margin-top: 2px;
             text-transform: uppercase;
             font-weight: 600;
         }
 
         .brand-logo {
-            width: 160px;
+            width: 140px;
             height: auto;
-            max-height: 70px;
+            max-height: 50px;
             object-fit: contain;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .input-group {
             width: 100%;
-            margin: 15px 0;
+            margin: 5px 0;
         }
         .input-group label {
             display: block;
-            font-size: 16px;
+            font-size: 15px;
             color: #444;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 700;
         }
-        input {
-            font-size: 32px;
-            padding: 10px;
-            width: 85%;
+        
+        /* Pantalla simulada del PIN */
+        #pinDisplay {
+            font-size: 28px;
+            padding: 8px;
+            width: 75%;
+            margin: 0 auto;
             text-align: center;
-            border: 3px solid #ddd;
-            border-radius: 16px;
-            letter-spacing: 10px;
-            outline: none;
-            transition: border-color 0.3s;
+            border: 3px solid var(--color-azul);
+            border-radius: 14px;
+            letter-spacing: 12px;
+            background: #fff;
+            color: #333;
+            font-weight: bold;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        input:focus {
-            border-color: var(--color-azul);
-            box-shadow: 0 0 12px rgba(0, 86, 179, 0.25);
+
+        /* Teclado numérico en pantalla */
+        .teclado-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 75%;
+            margin: 5px auto;
+        }
+        .btn-num {
+            background: #eef2f7;
+            color: var(--color-negro);
+            border: 1px solid #dcdcdc;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 12px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+            transition: background 0.1s, transform 0.1s;
+        }
+        .btn-num:active {
+            background: #d0d7de;
+            transform: scale(0.95);
+        }
+        .btn-borrar {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .btn-borrar:active {
+            background: #f5c6cb;
         }
 
         .btn-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            width: 100%;
-            margin-top: 10px;
+            gap: 15px;
+            width: 85%;
+            margin-top: 5px;
         }
-        button {
-            font-size: 18px;
-            padding: 16px 25px;
+        .btn-accion {
+            font-size: 16px;
+            padding: 12px 20px;
             cursor: pointer;
             color: white;
             border: none;
-            border-radius: 16px;
-            width: 45%;
+            border-radius: 12px;
+            width: 48%;
             font-weight: bold;
-            transition: opacity 0.2s, transform 0.1s;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.1s;
         }
-        button:active {
+        .btn-accion:active {
             transform: scale(0.97);
         }
         .btn-entrada { background: #28a745; }
@@ -179,35 +219,37 @@
             height: 100%;
         }
         .info-empleado {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: var(--color-negro);
-            margin: 8px 0;
+            margin: 6px 0;
         }
         .info-puesto {
-            font-size: 16px;
+            font-size: 15px;
             color: #555;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
         .info-hora {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            padding: 12px;
-            border-radius: 12px;
-            display: inline-block;
-            width: 95%;
-        }
-        #mensaje-error {
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 15px;
-            color: #721c24;
-            background: #f8d7da;
             padding: 10px;
             border-radius: 10px;
-            display: none;
+            display: inline-block;
             width: 90%;
+        }
+        #mensaje-error {
+            margin-top: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #721c24;
+            background: #f8d7da;
+            padding: 8px;
+            border-radius: 8px;
+            display: none;
+            width: 85%;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
@@ -235,20 +277,36 @@
                 <img src="https://i.ibb.co/6R7281M/logo-centenario.jpg" alt="Centenario Fabricantes" class="brand-logo" onerror="this.style.display='none'">
 
                 <div class="input-group">
-                    <label for="pinInput">Ingresa tu PIN personal</label>
-                    <input type="password" id="pinInput" placeholder="----" maxlength="6" autofocus>
+                    <label>Ingresa tu PIN personal</label>
+                    <div id="pinDisplay">----</div>
+                </div>
+
+                <!-- Teclado Numérico Táctil -->
+                <div class="teclado-grid">
+                    <button class="btn-num" onclick="agregarDigito('1')">1</button>
+                    <button class="btn-num" onclick="agregarDigito('2')">2</button>
+                    <button class="btn-num" onclick="agregarDigito('3')">3</button>
+                    <button class="btn-num" onclick="agregarDigito('4')">4</button>
+                    <button class="btn-num" onclick="agregarDigito('5')">5</button>
+                    <button class="btn-num" onclick="agregarDigito('6')">6</button>
+                    <button class="btn-num" onclick="agregarDigito('7')">7</button>
+                    <button class="btn-num" onclick="agregarDigito('8')">8</button>
+                    <button class="btn-num" onclick="agregarDigito('9')">9</button>
+                    <button class="btn-num btn-borrar" onclick="limpiarPin()">C</button>
+                    <button class="btn-num" onclick="agregarDigito('0')">0</button>
+                    <button class="btn-num btn-borrar" onclick="borrarDigito()">⌫</button>
                 </div>
                 
                 <div class="btn-container">
-                    <button class="btn-entrada" onclick="registrar('ENTRADA')">Entrada</button>
-                    <button class="btn-salida" onclick="registrar('SALIDA')">Salida</button>
+                    <button class="btn-accion btn-entrada" onclick="registrar('ENTRADA')">Entrada</button>
+                    <button class="btn-accion btn-salida" onclick="registrar('SALIDA')">Salida</button>
                 </div>
 
                 <div id="mensaje-error"></div>
             </div>
 
             <div id="resultado-container">
-                <h2 id="titulo-resultado" style="margin: 0 0 10px 0; font-size: 30px;">¡Entrada Registrada!</h2>
+                <h2 id="titulo-resultado" style="margin: 0 0 8px 0; font-size: 26px;">¡Entrada Registrada!</h2>
                 
                 <div id="nombreEmpleado" class="info-empleado">Nombre del Empleado</div>
                 <div id="puestoEmpleado" class="info-puesto">Puesto</div>
@@ -262,6 +320,34 @@
     <canvas id="canvasFoto" style="display:none;"></canvas>
 
     <script>
+        let pinActual = "";
+
+        function actualizarDisplayPin() {
+            const display = document.getElementById('pinDisplay');
+            if (pinActual.length === 0) {
+                display.innerText = "----";
+            } else {
+                display.innerText = "•".repeat(pinActual.length);
+            }
+        }
+
+        function agregarDigito(digito) {
+            if (pinActual.length < 6) {
+                pinActual += digito;
+                actualizarDisplayPin();
+            }
+        }
+
+        function borrarDigito() {
+            pinActual = pinActual.slice(0, -1);
+            actualizarDisplayPin();
+        }
+
+        function limpiarPin() {
+            pinActual = "";
+            actualizarDisplayPin();
+        }
+
         setInterval(() => {
             const now = new Date();
             document.getElementById('horaActual').innerText = now.toLocaleTimeString();
@@ -321,7 +407,6 @@
             return new Blob([ab], { type: mimeString });
         }
 
-        // Función para generar la fecha y hora exacta en formato local YYYY-MM-DDTHH:mm:ss sin desfase UTC
         function obtenerFechaHoraLocal() {
             const d = new Date();
             const year = d.getFullYear();
@@ -334,7 +419,7 @@
         }
 
         async function registrar(tipo) {
-            const pin = document.getElementById('pinInput').value.trim();
+            const pin = pinActual.trim();
             const divError = document.getElementById('mensaje-error');
 
             divError.style.display = 'none';
@@ -355,14 +440,13 @@
                 if (errEmpleado || !empleado) {
                     divError.innerText = '❌ PIN incorrecto o no registrado';
                     divError.style.display = 'block';
-                    document.getElementById('pinInput').value = '';
+                    limpiarPin();
                     return;
                 }
 
                 let fotoDataUrl = '';
                 let fotoUrlPublica = '';
 
-                // 1. Si es ENTRADA, capturar foto y subirla a Supabase Storage
                 if (tipo === 'ENTRADA') {
                     const videoElement = document.getElementById('videoCamara');
                     const canvas = document.getElementById('canvasFoto');
@@ -395,7 +479,6 @@
                     }
                 }
 
-                // 2. Registrar el checaje con la hora local exacta de la computadora
                 const { error: errChecaje } = await supabaseClient
                     .from('checajes')
                     .insert([
@@ -469,8 +552,7 @@
                 document.getElementById('vista-foto-izquierda').style.display = 'none';
                 cuerpo.style.backgroundColor = 'var(--color-fondo)';
                 tarjeta.style.borderColor = 'var(--color-azul)';
-                document.getElementById('pinInput').value = '';
-                document.getElementById('pinInput').focus();
+                limpiarPin();
             }, 4000);
         }
     </script>
