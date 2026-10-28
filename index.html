@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia - Centenario</title>
+    <!-- Cargamos la librería oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --color-rojo: #e60012;
+            --color-rojo-oscuro: #b8000e;
+            --color-azul: #0056b3;
+            --color-negro: #1a1a1a;
+            --color-fondo: #f4f6f8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: var(--color-fondo);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
+        }
+
+        .card {
+            background: white;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 8px solid var(--color-azul);
+            border-bottom: 8px solid var(--color-rojo);
+            padding: 30px 50px;
+            box-shadow: none;
+            border-radius: 0;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        .columna-izquierda {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 3px solid #eee;
+            padding-right: 30px;
+        }
+
+        #videoCamara {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid var(--color-azul);
+            background: #000;
+            box-shadow: 0 10px 30px rgba(0, 86, 179, 0.35);
+        }
+
+        .foto-capturada {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .columna-derecha {
+            width: 48%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            padding-left: 20px;
+        }
+
+        #reloj-container {
+            width: 100%;
+        }
+        #horaActual {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 800;
+            color: var(--color-negro);
+            margin: 0;
+        }
+        #fechaActual {
+            font-size: clamp(12px, 2vw, 15px);
+            color: #666;
+            margin-top: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .brand-logo {
+            width: 160px;
+            height: auto;
+            max-height: 70px;
+            object-fit: contain;
+            margin: 10px 0;
+        }
+
+        .input-group {
+            width: 100%;
+            margin: 15px 0;
+        }
+        .input-group label {
+            display: block;
+            font-size: 16px;
+            color: #444;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        input {
+            font-size: 32px;
+            padding: 10px;
+            width: 85%;
+            text-align: center;
+            border: 3px solid #ddd;
+            border-radius: 16px;
+            letter-spacing: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: var(--color-azul);
+            box-shadow: 0 0 12px rgba(0, 86, 179, 0.25);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button {
+            font-size: 18px;
+            padding: 16px 25px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            width: 45%;
+            font-weight: bold;
+            transition: opacity 0.2s, transform 0.1s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        button:active {
+            transform: scale(0.97);
+        }
+        .btn-entrada { background: #28a745; }
+        .btn-entrada:hover { background: #218838; }
+        
+        .btn-salida { background: var(--color-rojo); }
+        .btn-salida:hover { background: var(--color-rojo-oscuro); }
+
+        #resultado-container {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .info-empleado {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--color-negro);
+            margin: 8px 0;
+        }
+        .info-puesto {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .info-hora {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            width: 95%;
+        }
+        #mensaje-error {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            color: #721c24;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 10px;
+            display: none;
+            width: 90%;
+        }
+    </style>
+</head>
+<body id="cuerpoPagina">
+
+    <div class="card" id="tarjetaPrincipal">
+        
+        <div class="columna-izquierda">
+            <div id="vista-camara-izquierda">
+                <video id="videoCamara" autoplay playsinline muted></video>
+            </div>
+            <div id="vista-foto-izquierda" style="display: none;">
+                <img id="imgCapturada" class="foto-capturada" alt="Foto de registro">
+            </div>
+        </div>
+
+        <div class="columna-derecha">
+            
+            <div id="reloj-container">
+                <p id="horaActual">00:00:00</p>
+                <p id="fechaActual">Cargando fecha...</p>
+            </div>
+
+            <div id="vista-checar" style="width: 100%;">
+                <img src="https://i.ibb.co/6R7281M/logo-centenario.jpg" alt="Centenario Fabricantes" class="brand-logo" onerror="this.style.display='none'">
+
+                <div class="input-group">
+                    <label for="pinInput">Ingresa tu PIN personal</label>
+                    <input type="password" id="pinInput" placeholder="----" maxlength="6" autofocus>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn-entrada" onclick="registrar('ENTRADA')">Entrada</button>
+                    <button class="btn-salida" onclick="registrar('SALIDA')">Salida</button>
+                </div>
+
+                <div id="mensaje-error"></div>
+            </div>
+
+            <div id="resultado-container">
+                <h2 id="titulo-resultado" style="margin: 0 0 10px 0; font-size: 30px;">¡Entrada Registrada!</h2>
+                
+                <div id="nombreEmpleado" class="info-empleado">Nombre del Empleado</div>
+                <div id="puestoEmpleado" class="info-puesto">Puesto</div>
+                <div id="horaRegistro" class="info-hora">Hora: 00:00:00</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <canvas id="canvasFoto" style="display:none;"></canvas>
+
+    <script>
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('horaActual').innerText = now.toLocaleTimeString();
+            const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('fechaActual').innerText = now.toLocaleDateString('es-ES', opciones);
+        }, 1000);
+
+        const SUPABASE_URL = 'https://xpzerhbgctrogsetyeni.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_c4sTrgw2_5xFB3La6AvPEg_E3orFjQu';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function reproducirSonido(tipo) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (tipo === 'ENTRADA') {
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                } else {
+                    osc.frequency.setValueAtTime(700, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.log("Audio no soportado o bloqueado temporalmente");
+            }
+        }
+
+        async function iniciarCamara() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('videoCamara').srcObject = stream;
+            } catch (error) {
+                console.error("Error al acceder a la cámara: ", error);
+            }
+        }
+        iniciarCamara();
+
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        }
+
+        // Función para generar la fecha y hora exacta en formato local YYYY-MM-DDTHH:mm:ss sin desfase UTC
+        function obtenerFechaHoraLocal() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        }
+
+        async function registrar(tipo) {
+            const pin = document.getElementById('pinInput').value.trim();
+            const divError = document.getElementById('mensaje-error');
+
+            divError.style.display = 'none';
+
+            if (!pin) {
+                divError.innerText = 'Por favor ingresa tu PIN';
+                divError.style.display = 'block';
+                return;
+            }
+
+            try {
+                const { data: empleado, error: errEmpleado } = await supabaseClient
+                    .from('empleados')
+                    .select('id, nombre, puesto')
+                    .eq('pin', pin)
+                    .single();
+
+                if (errEmpleado || !empleado) {
+                    divError.innerText = '❌ PIN incorrecto o no registrado';
+                    divError.style.display = 'block';
+                    document.getElementById('pinInput').value = '';
+                    return;
+                }
+
+                let fotoDataUrl = '';
+                let fotoUrlPublica = '';
+
+                // 1. Si es ENTRADA, capturar foto y subirla a Supabase Storage
+                if (tipo === 'ENTRADA') {
+                    const videoElement = document.getElementById('videoCamara');
+                    const canvas = document.getElementById('canvasFoto');
+                    canvas.width = videoElement.videoWidth || 500;
+                    canvas.height = videoElement.videoHeight || 500;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    fotoDataUrl = canvas.toDataURL('image/jpeg');
+
+                    const blob = dataURItoBlob(fotoDataUrl);
+                    const nombreArchivo = `emp_${empleado.id}_${Date.now()}.jpg`;
+
+                    const { error: errUpload } = await supabaseClient
+                        .storage
+                        .from('fotos-asistencia')
+                        .upload(nombreArchivo, blob, {
+                            contentType: 'image/jpeg',
+                            upsert: false
+                        });
+
+                    if (!errUpload) {
+                        const { data: urlData } = supabaseClient
+                            .storage
+                            .from('fotos-asistencia')
+                            .getPublicUrl(nombreArchivo);
+                        
+                        fotoUrlPublica = urlData.publicUrl;
+                    } else {
+                        console.error("Error al subir foto:", errUpload);
+                    }
+                }
+
+                // 2. Registrar el checaje con la hora local exacta de la computadora
+                const { error: errChecaje } = await supabaseClient
+                    .from('checajes')
+                    .insert([
+                        { 
+                            empleado_id: empleado.id, 
+                            tipo: tipo, 
+                            fecha_hora: obtenerFechaHoraLocal(),
+                            foto_url: fotoUrlPublica 
+                        }
+                    ]);
+
+                if (errChecaje) throw errChecaje;
+
+                reproducirSonido(tipo);
+                mostrarResultado(empleado, tipo, fotoDataUrl);
+
+            } catch (error) {
+                console.error(error);
+                divError.innerText = '⚠️ Error al conectar con el servidor';
+                divError.style.display = 'block';
+            }
+        }
+
+        function mostrarResultado(empleado, tipo, fotoUrl) {
+            document.getElementById('vista-checar').style.display = 'none';
+            document.getElementById('resultado-container').style.display = 'flex';
+
+            const horaActualTexto = new Date().toLocaleTimeString();
+            const cuerpo = document.getElementById('cuerpoPagina');
+            const tarjeta = document.getElementById('tarjetaPrincipal');
+
+            if (tipo === 'ENTRADA') {
+                cuerpo.style.backgroundColor = '#d4edda';
+                tarjeta.style.borderColor = '#28a745';
+                document.getElementById('titulo-resultado').innerText = '¡Bienvenido(a)!';
+                document.getElementById('titulo-resultado').style.color = '#155724';
+                
+                document.getElementById('vista-camara-izquierda').style.display = 'none';
+                document.getElementById('vista-foto-izquierda').style.display = 'block';
+                document.getElementById('imgCapturada').src = fotoUrl;
+
+                document.getElementById('nombreEmpleado').innerText = empleado.nombre;
+                document.getElementById('puestoEmpleado').innerText = empleado.puesto || 'Personal de Producción';
+                
+                const cajaHora = document.getElementById('horaRegistro');
+                cajaHora.style.backgroundColor = '#c3e6cb';
+                cajaHora.style.color = '#155724';
+                cajaHora.innerText = `Entrada registrada a las: ${horaActualTexto}`;
+            } else {
+                cuerpo.style.backgroundColor = '#f8d7da';
+                tarjeta.style.borderColor = 'var(--color-rojo)';
+                document.getElementById('titulo-resultado').innerText = '¡Hasta luego!';
+                document.getElementById('titulo-resultado').style.color = '#721c24';
+                
+                document.getElementById('vista-camara-izquierda').style.display = 'block';
+                document.getElementById('vista-foto-izquierda').style.display = 'none';
+
+                document.getElementById('nombreEmpleado').innerText = empleado.nombre;
+                document.getElementById('puestoEmpleado').innerText = empleado.puesto || 'Personal de Producción';
+                
+                const cajaHora = document.getElementById('horaRegistro');
+                cajaHora.style.backgroundColor = '#f5c6cb';
+                cajaHora.style.color = '#721c24';
+                cajaHora.innerText = `Salida registrada a las: ${horaActualTexto}`;
+            }
+
+            setTimeout(() => {
+                document.getElementById('resultado-container').style.display = 'none';
+                document.getElementById('vista-checar').style.display = 'block';
+                document.getElementById('vista-camara-izquierda').style.display = 'block';
+                document.getElementById('vista-foto-izquierda').style.display = 'none';
+                cuerpo.style.backgroundColor = 'var(--color-fondo)';
+                tarjeta.style.borderColor = 'var(--color-azul)';
+                document.getElementById('pinInput').value = '';
+                document.getElementById('pinInput').focus();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
